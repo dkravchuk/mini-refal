@@ -8,6 +8,7 @@ open Refal.ParserCombinator
 open Refal.RefalParser
 open Refal.Refal
 
-let pat = (many term) (Seq.toList "'abcd' s.1 'f' s.1") |> List.head |> fst |> List.concat
-let inp = Seq.toList "abcdefe"
-let x = matchInp pat inp
+let sen = sentence (Seq.toList "s.1 e.1 s.1 = e.1;") |> List.head |> fst
+let inp = Seq.toList "abcba"
+let x = matchInp (fst sen) inp
+let res = rebuild (Option.get x) (snd sen) |> Option.get |> List.map snd |> List.concat

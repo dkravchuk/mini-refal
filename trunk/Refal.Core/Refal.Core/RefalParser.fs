@@ -20,7 +20,7 @@ let identifier =
 
 /// Refal term
 type Term =
-    | Literal of Char
+    | Literal of String
     | SVar of int
     | EVar of int
     | Funcall of String * Term list
@@ -30,7 +30,7 @@ let literal =
     char '\'' >>>
     many (notchar '\'') >>= fun items ->
     char '\'' >>>
-    result (List.map (fun i -> Literal(i)) items)
+    result (Literal(charsToString items))
     |> unjunk
 
 /// S/E-type variable parser
@@ -38,7 +38,7 @@ let var =
     (char 's' >>> result SVar) +++ (char 'e' >>> result EVar) >>= fun tp ->
     char '.' >>>
     nat >>= fun id ->
-    result [tp(id)]
+    result (tp(id))
     |> unjunk
 
 /// Function call parser
@@ -47,7 +47,7 @@ let rec funcall =
             identifier >>= fun name ->
             many term >>= fun args ->
             char '>' >>>
-            result [Funcall(name, List.concat args)]
+            result (Funcall(name, args))
             |> unjunk
 
 /// Single Refal term parser
@@ -59,7 +59,7 @@ let sentence =
     unjunk (char '=') >>>
     many term >>= fun rhs ->
     char ';' >>>
-    result (List.concat lhs, List.concat rhs)
+    result (lhs, rhs)
     |> unjunk
 
 /// Refal function parser
