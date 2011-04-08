@@ -15,7 +15,7 @@ let unjunk p =
 let identifier =
     letter >>= fun h ->
     many alphanum >>= fun t ->
-    result (h::t |> charsToString)
+    result (h::t |> String.ofChars)
     |> unjunk
 
 /// Refal term
@@ -30,7 +30,7 @@ let literal =
     char '\'' >>>
     many (notchar '\'') >>= fun items ->
     char '\'' >>>
-    result (Literal(charsToString items))
+    result (Literal(String.ofChars items))
     |> unjunk
 
 /// S/E-type variable parser

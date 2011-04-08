@@ -2,10 +2,9 @@
 
 open System
 
-/// Joins the specified Char list into a single String
-let charsToString (chars: Char list) =
-    String.Join ("", chars)
-
+module String =
+    /// Joins the specified Char list into a single String
+    let ofChars (chars: seq<Char>) = String.Join("", chars)
 
 //--- Basic parsers ----------------------------------------
 
@@ -22,45 +21,28 @@ let zero inp = []
 let (>>=) p f =
     p >> List.map (fun (v, rest) -> f v rest) >> List.concat
 
-/// Sequence combinator
+/// Sequence combinators
 let (>>>) p q =
     p >>= fun _ ->
     q >>= fun v ->
     result v
 
+let (++>) p q =
+    p >>= fun vp ->
+    q >>= fun vq ->
+    result (vp @ vq)
+
 /// Choice combinator
 let (+++) p q inp =
-//    p inp @ q inp
-    match p inp with
-    | []    -> q inp
-    | res   -> res
+    p inp @ q inp
 
 /// Repetition combinators
 let rec many1 p =
     p >>= fun h ->
     (many1 p +++ result []) >>= fun t ->
     result (h::t)
+
 let many p = many1 p +++ result []
-
-///// Separation combinators
-//let rec sepby1 sep p =
-//    p >>= fun h ->
-//    many (sep >>> p >>= result) >>= fun t ->
-//    result (h::t)
-//let sepby sep p = sepby1 sep p +++ result []
-
-/// Magic
-let repeatUntil p q =
-    let rec loop acc inp =
-        match q inp with
-        | [(v, rest)]   -> result (acc @ [v]) rest
-        | []            -> match p inp with
-                           | [(v, rest)]    -> loop (acc @ [v]) rest
-                           | []             -> []
-    
-    p >>= fun h ->
-    loop [] >>= fun t ->
-    result (h::t)
 
 
 //--- Simple parsers ---------------------------------------
@@ -70,6 +52,12 @@ let item inp =
     match inp with
     | []    -> []
     | h::t  -> result h t
+
+/// Empty list parser
+let empty inp =
+    match inp with
+    | []        -> result [] []
+    | otherwise -> []
 
 /// Specified item parser
 let sat p =
@@ -97,5 +85,5 @@ let string s =
         | []    -> result ""
         | h::t  -> char h >>>
                    loop t >>>
-                   result (h::t |> charsToString)
+                   result (h::t |> String.ofChars)
     loop (Seq.toList s)
