@@ -51,7 +51,8 @@ let rec funcall =
             |> unjunk
 
 /// Single Refal term parser
-    and term = literal +++ var +++ funcall
+    and term =
+            literal +++ var +++ funcall
 
 /// Refal sentence parser
 let sentence =
