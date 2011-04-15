@@ -8,9 +8,13 @@ open Refal.ParserCombinator
 open Refal.RefalParser
 open Refal.Refal
 
-let sen = sentence (Seq.toList "s.1 e.1 s.1 = <Pal e.1 e.2>;") |> List.head |> fst
-let inp = Seq.toList "abcba"
-let pat = fst sen
-let lhs = matchTerms pat inp |> List.head
-let rhs = snd sen
-let rebuilt = rebuild lhs rhs
+let progtext = @"
+Go {
+    s.1 e.1 s.1 = <Go e.1>;
+    s.1 = 'True';
+    = 'True';
+    s.1 s.1 = 'True';
+    e.1 = 'False';
+}"
+let p = program (Seq.toList progtext) |> List.head |> fst
+let res = execProgram p (Seq.toList "abcba")
