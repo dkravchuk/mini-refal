@@ -5,6 +5,7 @@ open System
 open Refal.ParserCombinator
 open Refal.RefalParser
 
+
 let matchWithPattern pattern inp =
     /// Converts term to parser
     let termToParser term =
@@ -33,7 +34,7 @@ let execProgram p programInput =
     
     let rec execFunc f args =
         
-        let rebuild lhs rhs =    
+        let rebuild lhs rhs =
             let rec getResult t =
                 match t with
                 | SVar(_) | EVar(_)     -> match List.tryFind (fst >> (=) t) lhs with
@@ -60,3 +61,12 @@ let execProgram p programInput =
     match List.tryFind (fst >> (=) "Go") p with
     | None      -> None
     | Some(f)   -> Some(execFunc f programInput)
+
+
+
+
+
+let ExecuteProgram (p: String) (inp: String) =
+    match execProgram (program (Seq.toList p) |> List.head |> fst) (Seq.toList inp) with
+    | Some(Some(res))   -> String.ofChars res
+    | otherwise         -> failwith "Some error occured. Maybe Refal code is wrong. Maybe you're just a loser."
