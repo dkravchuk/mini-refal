@@ -69,4 +69,4 @@ let execProgram p programInput =
 let ExecuteProgram (p: String) (inp: String) =
     match execProgram (program (Seq.toList p) |> List.head |> fst) (Seq.toList inp) with
     | Some(Some(res))   -> String.ofChars res
-    | otherwise         -> failwith "Some error occured. Maybe Refal code is wrong. Maybe you're just a loser."
+    | otherwise         -> failwith "Error"
